@@ -24,6 +24,14 @@
         box-sizing: border-box;
         font-size: 16px;
       }
+      input[type="date"].input-field {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
+      }
       button {
         margin-top: 20px;
         width: 100%;
@@ -57,7 +65,7 @@
     </style>
   </head>
   <body>
-    <h1>再就職手当シミュレーター</h1>
+    <h2>再就職手当シミュレーター</h2>
 
     <label>基本手当日額（円）:</label>
     <input type="number" id="dailyAmount" placeholder="例: 5145" value="5145" />
