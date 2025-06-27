@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>再就職手当シミュレーター</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 20px;
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.6;
+      }
+      label {
+        display: block;
+        margin-top: 15px;
+        font-weight: bold;
+      }
+      input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        box-sizing: border-box;
+        font-size: 16px;
+      }
+      button {
+        margin-top: 20px;
+        width: 100%;
+        padding: 12px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        font-size: 16px;
+        border-radius: 4px;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      #result {
+        display: none; /* ← 初期非表示にする */
+        margin-top: 20px;
+        padding: 15px;
+        background: #f0f0f0;
+        border-radius: 4px;
+      }
+
+      @media (max-width: 480px) {
+        body {
+          padding: 15px;
+        }
+        input,
+        button {
+          font-size: 14px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>再就職手当シミュレーター</h1>
+
+    <label>基本手当日額（円）:</label>
+    <input type="number" id="dailyAmount" placeholder="例: 5145" value="5145" />
+
+    <label>所定給付日数（日）:</label>
+    <input type="number" id="totalDays" placeholder="例: 300" value="300" />
+
+    <label>受給開始日:</label>
+    <input type="date" id="startDate" value="2025-05-16" />
+
+    <label>入社日（再就職日）:</label>
+    <input type="date" id="employmentDate" />
+
+    <button onclick="calculate()">計算する</button>
+
+    <div id="result"></div>
+
+    <script>
+      function calculate() {
+        const dailyAmount = parseFloat(
+          document.getElementById("dailyAmount").value
+        );
+        const totalDays = parseInt(document.getElementById("totalDays").value);
+        const startDate = new Date(document.getElementById("startDate").value);
+        const employmentDate = new Date(
+          document.getElementById("employmentDate").value
+        );
+
+        if (
+          isNaN(dailyAmount) ||
+          isNaN(totalDays) ||
+          isNaN(startDate.getTime()) ||
+          isNaN(employmentDate.getTime())
+        ) {
+          document.getElementById("result").innerHTML =
+            "すべての項目を正しく入力してください。";
+          return;
+        }
+
+        const msPerDay = 1000 * 60 * 60 * 24;
+        const usedDays = Math.floor((employmentDate - startDate) / msPerDay);
+        const remainingDays = totalDays - usedDays;
+
+        let rate = 0;
+        let rateLabel = "対象外（残りが所定給付日数の1/3未満）";
+        let amount = 0;
+
+        if (remainingDays >= (totalDays * 2) / 3) {
+          rate = 0.7;
+          rateLabel = "70％支給";
+        } else if (remainingDays >= totalDays / 3) {
+          rate = 0.6;
+          rateLabel = "60％支給";
+        }
+
+        if (rate > 0) {
+          amount = Math.floor(dailyAmount * remainingDays * rate);
+        }
+        document.getElementById("result").style.display = "block";
+        document.getElementById("result").innerHTML = `
+          <strong>受給日数：</strong>${usedDays}日<br>
+          <strong>残日数：</strong>${remainingDays}日<br>
+          <strong>支給率：</strong>${rateLabel}<br>
+          <strong>支給額（概算）：</strong>${amount.toLocaleString()}円
+        `;
+      }
+    </script>
+  </body>
+</html>
